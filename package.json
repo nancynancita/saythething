@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Say The Thing Workplace Coach App",
   "main": "api/chat.js",
+  "scripts": {
+    "start": "node api/chat.js"
+  },
   "dependencies": {},
   "devDependencies": {}
 }
