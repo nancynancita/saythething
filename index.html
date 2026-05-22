@@ -257,10 +257,16 @@
         <div id="welcome-screen">
             <div class="card">
                 <h2 style="font-family: Georgia, serif; font-size: 1.8rem; margin-bottom: 20px; color: var(--text-color); line-height: 1.3;">
-                    Hard conversations don't have to go sideways.
+                    Hard conversations don&rsquo;t have to go sideways.
                 </h2>
                 <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 16px;">
-                    Say The Thing is your on-demand difficult conversations coach. Whether it's tough feedback for a direct report, a conflict with a coworker, or the moment you finally ask for what you deserve, you'll get language options personalized to your situation and talking points for when your brain goes blank.
+                    Say The Thing is your on-demand difficult conversations coach. The one you turn to before a tough talk with a direct report, a conflict with a coworker, or the moment you finally ask for what you deserve.
+                </p>
+                <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 16px;">
+                    Here&rsquo;s what you get: language options personalized for you, talking points for when your mind goes blank, and a clear path to getting your point across with tact and confidence.
+                </p>
+                <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 16px;">
+                    No more rehearsing in your head for days. No more walking away wishing you&rsquo;d said something different. Just real guidance that helps you Say The Thing and walk away with understanding instead of frustration.
                 </p>
                 <p style="font-size: 1.1rem; line-height: 1.6;">
                     Try it free. Your next hard conversation is closer than you think.
@@ -487,131 +493,4 @@
             if (currentStep === 3) {
                 const primaryKind = answers[0];
                 const warningCard = document.getElementById('channel-warning');
-                const isRiskyKind = (primaryKind && (primaryKind.includes("feedback") || primaryKind.includes("conflict") || primaryKind.includes("request")));
-                const isWrittenChannel = (val.includes("Email") || val.includes("Text") || val.includes("chat"));
-                
-                if (isRiskyKind && isWrittenChannel) {
-                    warningCard.classList.remove('hidden');
-                } else {
-                    warningCard.classList.add('hidden');
-                }
-            }
-
-            setTimeout(() => {
-                goNext();
-            }, 350);
-        }
-
-        function goBack() {
-            if (currentStep > 0) {
-                if (questions[currentStep].type === "text") {
-                    answers[currentStep] = document.getElementById('q-input').value;
-                }
-                currentStep--;
-                showQuestion();
-            }
-        }
-
-        async function goNext() {
-            if (questions[currentStep].type === "text") {
-                answers[currentStep] = document.getElementById('q-input').value;
-            }
-            
-            if (currentStep !== 5 && !answers[currentStep]) {
-                alert('Please provide an entry or select an option to continue.');
-                return;
-            }
-
-            if (currentStep < questions.length - 1) {
-                currentStep++;
-                showQuestion();
-            } else {
-                await generateResults();
-            }
-        }
-
-        async function generateResults() {
-            document.getElementById('wizard-screen').classList.add('hidden');
-            document.getElementById('loading-screen').classList.remove('hidden');
-
-            const formattedPrompt = questions.map((q, i) => '[' + q.label + ': ' + q.text + ']\n' + (answers[i] || 'Not specified')).join('\n\n');
-
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: formattedPrompt })
-                });
-
-                const result = await response.json();
-
-                if (!response.ok || result.error) {
-                    throw new Error(result.error || 'Server error occurred');
-                }
-
-                displayResults(result.data);
-            } catch (error) {
-                alert('Something went wrong: ' + error.message);
-                restartApp();
-            }
-        }
-
-        function displayResults(data) {
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('results-screen').classList.remove('hidden');
-
-            document.getElementById('grounding-note').innerText = data.grounding_note;
-            
-            const optionsContainer = document.getElementById('language-options');
-            optionsContainer.innerHTML = '';
-            data.language_options.forEach(opt => {
-                const box = document.createElement('div');
-                box.className = 'register-box';
-                box.innerHTML = '<div class="register-title">' + opt.register + '</div><div>' + opt.text + '</div>';
-                optionsContainer.appendChild(box);
-            });
-
-            const pointsContainer = document.getElementById('talking-points');
-            pointsContainer.innerHTML = '';
-            data.talking_points.forEach(pt => {
-                const li = document.createElement('li');
-                li.innerText = pt;
-                pointsContainer.appendChild(li);
-            });
-
-            document.getElementById('make-it-yours').innerText = data.make_it_yours;
-            document.getElementById('watch-for').innerText = data.watch_for;
-        }
-
-        function restartApp() {
-            currentStep = 0;
-            answers = [];
-            const txtInput = document.getElementById('q-input');
-            if(txtInput) txtInput.value = '';
-            document.getElementById('results-screen').classList.add('hidden');
-            document.getElementById('loading-screen').classList.add('hidden');
-            document.getElementById('wizard-screen').classList.add('hidden');
-            document.getElementById('welcome-screen').classList.remove('hidden');
-        }
-
-        function copyAllResults() {
-            let textToCopy = 'SAY THE THING - RESULTS\n\n' + document.getElementById('grounding-note').innerText + '\n\nLANGUAGE OPTIONS:\n';
-            
-            document.querySelectorAll('.register-box').forEach(box => {
-                textToCopy += '\n' + box.innerText + '\n';
-            });
-
-            textToCopy += '\nTALKING POINTS:\n';
-            document.querySelectorAll('#talking-points li').forEach(li => {
-                textToCopy += '- ' + li.innerText + '\n';
-            });
-
-            textToCopy += '\nMAKE IT YOURS:\n' + document.getElementById('make-it-yours').innerText + '\n';
-            textToCopy += '\nWATCH FOR THIS:\n' + document.getElementById('watch-for').innerText + '\n';
-
-            navigator.clipboard.writeText(textToCopy);
-            alert('All results copied to clipboard!');
-        }
-    </script>
-</body>
-</html>
+                const isRis
