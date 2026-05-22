@@ -74,8 +74,12 @@ Target Format Output Structure:
     
     if (!response.ok || data.error) {
       return res.status(response.status || 400).json({ 
-        error: data.error?.message || 'Anthropic API processing failure.' 
+        error: data.error?.message || data.error || 'Anthropic API processing failure.' 
       });
+    }
+
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      return res.status(500).json({ error: 'Unexpected API response structure.' });
     }
 
     const rawText = data.content[0].text;
