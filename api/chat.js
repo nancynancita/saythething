@@ -49,7 +49,7 @@ Target Format Output Structure:
 
   try {
     const userMessage = req.body.message || "No data provided";
-    
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -58,12 +58,12 @@ Target Format Output Structure:
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
         system: SYSTEM_PROMPT,
         messages: [
-          { 
-            role: 'user', 
+          {
+            role: 'user',
             content: userMessage
           }
         ]
@@ -71,10 +71,10 @@ Target Format Output Structure:
     });
 
     const data = await response.json();
-    
+
     if (!response.ok || data.error) {
-      return res.status(response.status || 400).json({ 
-        error: data.error?.message || data.error || 'Anthropic API processing failure.' 
+      return res.status(response.status || 400).json({
+        error: data.error?.message || data.error || 'Anthropic API processing failure.'
       });
     }
 
@@ -84,7 +84,7 @@ Target Format Output Structure:
 
     const rawText = data.content[0].text;
     const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    
+
     if (!jsonMatch) {
       return res.status(500).json({ error: 'Failed to extract structural JSON from response.' });
     }
