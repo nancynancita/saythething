@@ -97,6 +97,37 @@
             line-height: 1.4;
         }
 
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-button {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            color: var(--text-color);
+            font-size: 1rem;
+            text-align: left;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-button:hover {
+            background-color: #F0F4F8;
+        }
+
+        .option-button.selected {
+            background-color: var(--primary-color);
+            color: #FFFFFF;
+            border-color: var(--primary-color);
+        }
+
         textarea {
             width: 100%;
             height: 120px;
@@ -231,7 +262,10 @@
             <div id="question-container">
                 <div class="question-label" id="q-label"></div>
                 <div class="question-text" id="q-text"></div>
-                <textarea id="q-input" placeholder="Type your answer here..."></textarea>
+                
+                <div id="options-container" class="options-grid"></div>
+                
+                <textarea id="q-input" class="hidden" placeholder="Type your answer here..."></textarea>
             </div>
             <div class="btn-container">
                 <button class="btn-secondary" id="back-btn" onclick="goBack()">Back</button>
@@ -277,12 +311,74 @@
 
     <script>
         const questions = [
-            { label: "The Situation", text: "What is the situation you are dealing with? (Give the raw, unfiltered context.)" },
-            { label: "The Person", text: "Who are you having this conversation with? What is their role or power dynamic relative to you?" },
-            { label: "The Channel", text: "How will this conversation happen? (e.g., In person, Video call, Email, Slack, etc.)" },
-            { label: "The Hurdles", text: "Are there identity factors, communication gaps, neurodiversity, or cultural differences to keep in mind?" },
-            { label: "The Goal", text: "What is your ultimate goal for this outcome? What does success realistically look like?" },
-            { label: "Your Style", text: "What is your natural style? (e.g., Introverted, Direct, Collaborative, Anxious but firm, etc.)" }
+            { 
+                label: "The Situation", 
+                text: "What is the situation you are dealing with?",
+                type: "options",
+                choices: [
+                    "Asking for a raise, promotion, or resource",
+                    "Addressing performance issues or boundaries with a direct report",
+                    "Navigating a conflict, microaggression, or friction with a peer",
+                    "Delivering difficult feedback or challenging news upward to a manager",
+                    "Other workplace conversation dread"
+                ]
+            },
+            { 
+                label: "The Person", 
+                text: "Who are you having this conversation with? What is their role relative to you?",
+                type: "options",
+                choices: [
+                    "My Direct Manager / Boss",
+                    "A Peer or Colleague on my level",
+                    "A Direct Report or Team Member I manage",
+                    "An External Client, Vendor, or Stakeholder",
+                    "An Executive or Senior Leader"
+                ]
+            },
+            { 
+                label: "The Channel", 
+                text: "How will this conversation happen?",
+                type: "options",
+                choices: [
+                    "In person (Spoken Live)",
+                    "Video call / Zoom / Teams",
+                    "Written Email correspondence",
+                    "Slack / Microsoft Teams / Chat message"
+                ]
+            },
+            { 
+                label: "The Hurdles", 
+                text: "Are there identity factors or communication gaps to keep in mind?",
+                type: "options",
+                choices: [
+                    "Power dynamic / Fear of retaliation",
+                    "Neurodiversity or different processing styles",
+                    "Cultural, generational, or communication style differences",
+                    "None — it is just a high-stakes, nerve-wracking talk"
+                ]
+            },
+            { 
+                label: "The Goal", 
+                text: "What does success realistically look like for this outcome?",
+                type: "options",
+                choices: [
+                    "Clear boundary set and documented",
+                    "Alignment on next steps or an explicitly approved request",
+                    "Friction de-escalated and relationship preserved",
+                    "Perspective shared clearly without causing immediate defense"
+                ]
+            },
+            { 
+                label: "Your Style", 
+                text: "What is your natural communication style under stress?",
+                type: "options",
+                choices: [
+                    "Introverted / Over-rehearsed / Prone to freezing",
+                    "Direct / Blunt / Worried about sounding too harsh",
+                    "Collaborative / People-pleasing / Prone to softening the message too much",
+                    "Anxious but trying to remain completely firm"
+                ]
+            }
         ];
 
         let currentStep = 0;
@@ -307,25 +403,77 @@
 
         function showQuestion() {
             buildDots();
-            document.getElementById('q-label').innerText = 'Question ' + (currentStep + 1) + ': ' + questions[currentStep].label;
-            document.getElementById('q-text').innerText = questions[currentStep].text;
-            document.getElementById('q-input').value = answers[currentStep] || '';
+            const q = questions[currentStep];
+            document.getElementById('q-label').innerText = 'Question ' + (currentStep + 1) + ': ' + q.label;
+            document.getElementById('q-text').innerText = q.text;
+            
+            const optionsContainer = document.getElementById('options-container');
+            const txtInput = document.getElementById('q-input');
+            
+            optionsContainer.innerHTML = '';
+            
+            if (q.type === "options") {
+                optionsContainer.classList.remove('hidden');
+                txtInput.classList.add('hidden');
+                
+                q.choices.forEach(choice => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-button';
+                    if (answers[currentStep] === choice) {
+                        btn.className += ' selected';
+                    }
+                    btn.innerText = choice;
+                    btn.onclick = () => selectOption(choice);
+                    optionsContainer.appendChild(btn);
+                });
+            } else {
+                optionsContainer.classList.add('hidden');
+                txtInput.classList.remove('hidden');
+                txtInput.value = answers[currentStep] || '';
+                txtInput.focus();
+            }
+
             document.getElementById('back-btn').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
             document.getElementById('next-btn').innerText = currentStep === questions.length - 1 ? 'Get my language' : 'Next';
-            document.getElementById('q-input').focus();
+        }
+
+        function selectOption(val) {
+            answers[currentStep] = val;
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(b => {
+                if (b.innerText === val) {
+                    b.classList.add('selected');
+                } else {
+                    b.classList.remove('selected');
+                }
+            });
+            
+            // Auto-advance configuration on visual choice selection
+            setTimeout(() => {
+                goNext();
+            }, 250);
         }
 
         function goBack() {
             if (currentStep > 0) {
-                answers[currentStep] = document.getElementById('q-input').value;
+                if (questions[currentStep].type !== "options") {
+                    answers[currentStep] = document.getElementById('q-input').value;
+                }
                 currentStep--;
                 showQuestion();
             }
         }
 
         async function goNext() {
-            answers[currentStep] = document.getElementById('q-input').value;
+            if (questions[currentStep].type !== "options") {
+                answers[currentStep] = document.getElementById('q-input').value;
+            }
             
+            if (!answers[currentStep]) {
+                alert('Please make a selection or provide text input to proceed.');
+                return;
+            }
+
             if (currentStep < questions.length - 1) {
                 currentStep++;
                 showQuestion();
@@ -390,7 +538,8 @@
         function restartApp() {
             currentStep = 0;
             answers = [];
-            document.getElementById('q-input').value = '';
+            const txtInput = document.getElementById('q-input');
+            if(txtInput) txtInput.value = '';
             document.getElementById('results-screen').classList.add('hidden');
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('wizard-screen').classList.add('hidden');
