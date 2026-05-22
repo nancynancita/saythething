@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Say The Thing</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#faf9f7;color:#1a1a1a;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:660px;margin:0 auto}
+.hidden{display:none!important}
+
+/* API Setup Screen */
+.setup{text-align:center;padding:3rem 1rem}
+.setup h2{font-family:'DM Serif Display',serif;font-size:1.75rem;color:#194164;margin-bottom:0.75rem}
+.setup p{font-size:0.9rem;color:#666;line-height:1.7;max-width:420px;margin:0 auto 1.5rem}
+.setup input{width:100%;max-width:420px;border:2px solid #e0e0e0;border-radius:8px;padding:0.875rem 1rem;font-size:0.875rem;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;margin-bottom:1rem;display:block;margin-left:auto;margin-right:auto}
+.setup input:focus{border-color:#194164}
+.setup-note{font-size:0.78rem;color:#999;max-width:380px;margin:0 auto 1.5rem;line-height:1.6}
+
+/* Welcome */
+.welcome{text-align:center;padding:3rem 0 2rem}
+.wordmark{font-family:'DM Serif Display',serif;font-size:2.75rem;color:#194164;letter-spacing:-0.01em;line-height:1.1}
+.wbar{width:48px;height:3px;background:#b84817;margin:0.75rem auto 1.5rem;border-radius:2px}
+.tagline{font-size:1.25rem;font-weight:600;color:#1a1a1a;margin-bottom:1.25rem;line-height:1.4}
+.wdesc{font-size:0.95rem;color:#555;line-height:1.8;max-width:480px;margin:0 auto 2rem}
+
+/* Buttons */
+.btn-p{background:#194164;color:#fff;border:none;padding:0.875rem 2.25rem;border-radius:8px;font-size:0.95rem;cursor:pointer;font-weight:600;font-family:inherit}
+.btn-p:hover{opacity:0.88}
+.btn-s{background:#b84817;color:#fff;border:none;padding:0.875rem 2rem;border-radius:8px;font-size:0.95rem;cursor:pointer;font-weight:600;font-family:inherit}
+.btn-s:hover{opacity:0.88}
+.btn-b{background:none;border:1.5px solid #ccc;color:#666;padding:0.7rem 1.375rem;border-radius:8px;font-size:0.875rem;cursor:pointer;font-family:inherit}
+.btn-o{background:none;border:1.5px solid #194164;color:#194164;padding:0.7rem 1.375rem;border-radius:8px;font-size:0.875rem;cursor:pointer;font-family:inherit}
+
+/* Progress */
+.prog-wrap{margin-bottom:2rem}
+.prog-bar{height:3px;background:#e5e5e5;border-radius:2px}
+.prog-fill{height:100%;background:#194164;border-radius:2px;transition:width 0.4s ease}
+.prog-lbl{font-size:0.75rem;color:#999;margin-top:0.5rem}
+
+/* Steps */
+.step{display:none}.step.on{display:block}
+.ql{font-size:1rem;font-weight:600;color:#1a1a1a;line-height:1.5;margin-bottom:0.375rem}
+.qh{font-size:0.875rem;color:#666;line-height:1.65;margin-bottom:1rem}
+.qg{margin-bottom:1.875rem}
+
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;margin-top:1rem}
+.sc{border:2px solid #e0e0e0;border-radius:12px;padding:1.125rem 1rem;cursor:pointer;text-align:left;width:100%;font-family:inherit;font-size:0.875rem;font-weight:600;color:#1a1a1a;line-height:1.45;background:#fff}
+
+.prow{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.875rem}
+.sp{border:2px solid #e0e0e0;border-radius:20px;padding:0.55rem 1.125rem;font-size:0.875rem;cursor:pointer;background:#fff;color:#1a1a1a;font-family:inherit;line-height:1.4}
+
+.sp-block{border:2px solid #e0e0e0;border-radius:10px;padding:0.8rem 1.125rem;font-size:0.9rem;cursor:pointer;background:#fff;color:#1a1a1a;font-family:inherit;text-align:left;width:100%;display:block;margin-bottom:0.625rem;line-height:1.4}
+.sp-block:last-child{margin-bottom:0}
+
+textarea{width:100%;border:2px solid #e0e0e0;border-radius:8px;padding:1rem;font-size:0.9rem;font-family:inherit;color:#1a1a1a;background:#fff;resize:vertical;min-height:100px;line-height:1.7;outline:none}
+textarea:focus{border-color:#194164}
+textarea::placeholder{color:#bbb}
+input.oi{width:100%;margin-top:0.75rem;border:2px solid #e0e0e0;border-radius:8px;padding:0.7rem 1rem;font-size:0.875rem;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;display:none}
+input.oi.on{display:block}
+
+.snav{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #ebebeb}
+
+.flag{background:#f5deb3;border-left:3px solid #b84817;border-radius:0 8px 8px 0;padding:0.875rem 1.125rem;font-size:0.85rem;color:#194164;line-height:1.65;margin-top:1rem;display:none}
+.flag.on{display:block}
+
+/* Loading */
+.loading{text-align:center;padding:5rem 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:38px;height:38px;border:3px solid #e5e5e5;border-top-color:#194164;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 1.375rem}
+.ltxt{font-size:0.9rem;color:#777}
+
+/* Output */
+.out-header{padding-bottom:1.125rem;margin-bottom:1.5rem;border-bottom:2px solid #f0cfc3;display:flex;justify-content:space-between;align-items:baseline}
+.owm{font-family:'DM Serif Display',serif;font-size:1.5rem;color:#194164}
+.otag{font-size:0.75rem;color:#aaa;text-transform:uppercase;letter-spacing:0.06em}
+.gn{background:#f5deb3;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+.gn p{font-size:0.925rem;color:#194164;line-height:1.85}
+.slbl{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.11em;color:#b84817;margin-bottom:0.875rem}
+.lcard{border:1.5px solid #ebebeb;border-radius:12px;padding:1.25rem 1.375rem;margin-bottom:0.75rem;background:#fff}
+.lreg{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#b84817;margin-bottom:0.5rem}
+.ltx{font-size:0.925rem;color:#1a1a1a;line-height:1.85}
+.tpi{display:flex;gap:0.875rem;padding:0.55rem 0;border-bottom:1px solid #ebebeb;align-items:flex-start}
+.tpi:last-child{border-bottom:none}
+.tpd{width:5px;height:5px;border-radius:50%;background:#194164;margin-top:0.65rem;flex-shrink:0}
+.tpt{font-size:0.9rem;color:#1a1a1a;line-height:1.7}
+.mysec{background:#f0cfc3;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+.mysec p{font-size:0.925rem;color:#194164;line-height:1.85}
+.wfsec{border-left:3px solid #dc143c;padding-left:1.25rem;margin-bottom:2rem}
+.wflbl{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#dc143c;margin-bottom:0.4rem}
+.wfsec p{font-size:0.9rem;color:#1a1a1a;line-height:1.75}
+.copy-all-wrap{padding-top:1.5rem;border-top:1px solid #ebebeb;display:flex;justify-content:space-between;align-items:center}
+.copy-all{background:#194164;color:#fff;border:none;border-radius:8px;padding:0.75rem 1.5rem;font-size:0.875rem;cursor:pointer;font-family:inherit;font-weight:600}
+.copy-all:hover{opacity:0.88}
+.copy-all.copied{background:#b84817}
+.errbox{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:1.125rem;color:#dc143c;font-size:0.875rem;line-height:1.65;margin-top:1rem;display:none}
+.sec-gap{margin-bottom:1.5rem}
+
+@media(max-width:480px){
+  .cgrid{grid-template-columns:1fr 1fr}
+  .wordmark{font-size:2.1rem}
+  body{padding:1.25rem 0.875rem}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="root">
+
+<!-- API Setup -->
+<div id="vSetup" class="setup">
+  <h2>Say The Thing</h2>
+  <p>Enter your Anthropic API key to get started. It saves in your browser and is never stored anywhere else.</p>
+  <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-...">
+  <p class="setup-note">Your key stays in your browser only. It is never uploaded or shared.</p>
+  <button class="btn-p" id="btnSaveKey">Continue</button>
+</div>
+
+<!-- Welcome -->
+<div id="vWelcome" class="welcome hidden">
+  <div class="wordmark">Say The Thing</div>
+  <div class="wbar"></div>
+  <div class="tagline">Hard conversations don't have to go sideways.</div>
+  <p class="wdesc">Say The Thing is your on-demand difficult conversations coach. Whether it's tough feedback for a direct report, a conflict with a coworker, or the moment you finally ask for what you deserve, you'll get language options personalized to your situation and talking points for when your brain goes blank.<br><br>Try it free. Your next hard conversation is closer than you think.</p>
+  <button class="btn-p" id="btnStart">Let's do this</button>
+</div>
+
+<!-- Form -->
+<div id="vForm" class="hidden">
+  <div class="prog-wrap">
+    <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="prog-lbl" id="progLbl">Step 1 of 6</div>
+  </div>
+
+  <div class="step on" id="s1">
+    <div class="ql">What kind of conversation do you need to have?</div>
+    <div class="cgrid" id="sitGrid">
+      <button class="sc" data-val="I need to give feedback to someone">I need to give feedback (constructive or positive) to someone</button>
+      <button class="sc" data-val="Address a conflict or disagreement">Address a conflict or disagreement between myself and someone else</button>
+      <button class="sc" data-val="Make a request">Make a request</button>
+      <button class="sc" data-val="Decline something / Say no tactfully">Decline something / Say no tactfully</button>
+      <button class="sc" data-val="Delay a response / Buy me some time">Delay a response / Buy me some time</button>
+      <button class="sc" data-val="Something else" data-other="sitOther">Something else</button>
+    </div>
+    <input class="oi" id="sitOther" placeholder="Describe what you're dealing with">
+    <div class="snav"><div></div><button class="btn-p" id="btnTo2">Next</button></div>
+  </div>
+
+  <div class="step" id="s2">
+    <div class="qg">
+      <div class="ql">Describe the situation.</div>
+      <div class="qh">Tell it like you're explaining it to a trusted colleague or friend.</div>
+      <textarea id="desc" rows="5" placeholder='"My colleague constantly talks over me in meetings and I need to address it."'></textarea>
+    </div>
+    <div class="snav"><button class="btn-b" id="btnTo1b">Back</button><button class="btn-p" id="btnTo3">Next</button></div>
+  </div>
+
+  <div class="step" id="s3">
+    <div class="qg">
+      <div class="ql">What's your relationship with the person you need to talk to?</div>
+      <div class="prow" id="relRow">
+        <button class="sp" data-val="They're more senior to me">They're more senior to me</button>
+        <button class="sp" data-val="They're junior to me">They're junior to me</button>
+        <button class="sp" data-val="They are my peer">They are my peer</button>
+        <button class="sp" data-val="The person is a client or vendor">The person is a client or vendor</button>
+        <button class="sp" data-val="A colleague in another department or organization">A colleague in another department or organization</button>
+        <button class="sp" data-val="Other" data-other="relOther">Other</button>
+      </div>
+      <input class="oi" id="relOther" placeholder="Tell me more">
+    </div>
+    <div class="snav"><button class="btn-b" id="btnTo2b">Back</button><button class="btn-p" id="btnTo4">Next</button></div>
+  </div>
+
+  <div class="step" id="s4">
+    <div class="qg">
+      <div class="ql">How are you planning to have this conversation?</div>
+      <div id="chButtons" style="margin-top:1rem">
+        <button class="sp-block" data-val="In person or video call">In person or video call</button>
+        <button class="sp-block" data-val="Email or written message">Email or written message</button>
+        <button class="sp-block" data-val="Text or chat (Slack, Teams, etc.)">Text or chat (Slack, Teams, etc.)</button>
+        <button class="sp-block" data-val="I haven't decided yet">I haven't decided yet</button>
+      </div>
+      <div class="flag" id="chFlag">Heads up: this type of conversation tends to land better in person or on a call. If written is your only option, the language you'll get will account for that. But if there's any way to have it live, it's worth considering.</div>
+    </div>
+    <div class="snav"><button class="btn-b" id="btnTo3b">Back</button><button class="btn-p" id="btnTo5">Next</button></div>
+  </div>
+
+  <div class="step" id="s5">
+    <div class="qg">
+      <div class="ql">How do you typically feel or respond in conversations like this one?</div>
+      <div id="patButtons" style="margin-top:1rem">
+        <button class="sp-block" data-val="I get quiet and hope it passes">I get quiet and hope it passes</button>
+        <button class="sp-block" data-val="I say yes to keep the peace even when I don't mean it">I say yes to keep the peace even when I don't mean it</button>
+        <button class="sp-block" data-val="I freeze up and can't find the words in the moment">I freeze up and can't find the words in the moment</button>
+        <button class="sp-block" data-val="I get frustrated and it comes out in how I respond">I get frustrated and it comes out in how I respond</button>
+        <button class="sp-block" data-val="I over-explain or apologize more than I need to">I over-explain or apologize more than I need to</button>
+        <button class="sp-block" data-val="I stay calm but I'm churning inside">I stay calm but I'm churning inside</button>
+        <button class="sp-block" data-val="It depends on who I'm talking to">It depends on who I'm talking to</button>
+      </div>
+    </div>
+    <div class="snav"><button class="btn-b" id="btnTo4b">Back</button><button class="btn-p" id="btnTo6">Next</button></div>
+  </div>
+
+  <div class="step" id="s6">
+    <div class="qg">
+      <div class="ql">Anything else about the dynamics of the situation or relationship that concern you?</div>
+      <div class="qh">Optional. Share only what feels relevant.</div>
+      <textarea id="identity" rows="4" placeholder="e.g. I'm the only woman on this team. I want to be direct without being dismissed."></textarea>
+    </div>
+    <div class="snav"><button class="btn-b" id="btnTo5b">Back</button><button class="btn-s" id="btnSubmit">Get my language</button></div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div id="vLoading" class="loading hidden">
+  <div class="spin"></div>
+  <p class="ltxt" id="loadTxt">Reading your situation...</p>
+</div>
+
+<!-- Output -->
+<div id="vOutput" class="hidden">
+  <div class="out-header">
+    <div class="owm">Say The Thing</div>
+    <div class="otag" id="outTag"></div>
+  </div>
+  <div class="gn" id="outGrounding"></div>
+  <div class="sec-gap">
+    <div class="slbl">Your language options</div>
+    <div id="outLang"></div>
+  </div>
+  <div class="sec-gap">
+    <div class="slbl">Talking points to keep in your back pocket</div>
+    <div id="outTP"></div>
+  </div>
+  <div class="mysec">
+    <div class="slbl" style="color:#b84817;margin-bottom:0.4rem">Make it yours</div>
+    <p id="outMIY"></p>
+  </div>
+  <div class="wfsec">
+    <div class="wflbl">Watch for this</div>
+    <p id="outWF"></p>
+  </div>
+  <div class="errbox" id="outErr"></div>
+  <div class="copy-all-wrap">
+    <button class="btn-o" id="btnRestart">Start a new situation</button>
+    <button class="copy-all" id="btnCopyAll">Copy all</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+var S={sit:'',desc:'',rel:'',ch:'',pat:'',identity:''};
+var ON={backgroundColor:'#194164',color:'#ffffff',borderColor:'#194164',fontWeight:'600'};
+var OFF={backgroundColor:'#ffffff',color:'#1a1a1a',borderColor:'#e0e0e0',fontWeight:'normal'};
+var RISKY_SITS=['I need to give feedback to someone','Address a conflict or disagreement','Make a request'];
+var RISKY_CH=['Email or written message','Text or chat (Slack, Teams, etc.)'];
+
+var SYSTEM='You are Say The Thing, a workplace communication coach built on the Heard Framework by Nancy Marmolejo — grounded in Presence, Patience, and Phrasing. Your approach draws from Active Listening, Nonviolent Communication, Radical Acceptance, and Empathy.\n\nYou help people prepare for real workplace conversations they are dreading, avoiding, or do not know how to navigate. You understand power dynamics, identity in the workplace, neurodiversity, cultural differences, generational communication styles, microaggressions, code-switching, introvert and extrovert tendencies, and what it means to be the only one in a room who looks or communicates differently.\n\nVOICE RULES — follow exactly:\nWrite like a knowledgeable colleague who has seen this situation before and knows what to do. Clear and useful. No drama.\n\nNever write:\n- It\'s not X it\'s Y constructions\n- Short punchy sentences designed to land or create impact\n- The framing matters here or here\'s the thing or let that sink in\n- This is about X not Y\n- Rhetorical buildup before giving the actual help\n- A summary of what they just told you back to them\n- Validation of their feelings like that fear is real or this is understandable\n- The goal here is setups\n- Any sentence that reads like it is trying to be profound\n\nGROUNDING NOTE: One to two sentences maximum. Name what is happening in the situation plainly and move on. No perspective shifts, no reveals, no reframing. A brief practical observation that sets up the language below. Start with the situation not the person.\n\nLANGUAGE OPTIONS: 2-3 options in genuinely different registers labeled Direct and clear, Measured and firm, Collaborative and forward-looking. Real language a real person could say out loud without editing. Adjust for channel: write email language for email, spoken language for in person or video.\n\nTALKING POINTS: 3-5 short phrases. The bones of what they need to say. For when their brain goes blank in the room.\n\nMAKE IT YOURS: One practical instruction for adapting the language to their own voice. Plain and specific. No cheerleading.\n\nWATCH FOR THIS: One to two sentences. A specific practical thing to notice or do in the moment. Observational. No hypothetical confrontations no dramatic framing.\n\nRespond ONLY with valid JSON nothing else:\n{"grounding_note":"string","language_options":[{"register":"string","text":"string"}],"talking_points":["string"],"make_it_yours":"string","watch_for":"string"}';
+
+function show(id){document.getElementById(id).classList.remove('hidden')}
+function hide(id){document.getElementById(id).classList.add('hidden')}
+function sel(el){Object.assign(el.style,ON)}
+function desel(el){Object.assign(el.style,OFF)}
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach(function(s){s.classList.remove('on')});
+  document.getElementById('s'+n).classList.add('on');
+  document.getElementById('progFill').style.width=((n-1)/6*100)+'%';
+  document.getElementById('progLbl').textContent='Step '+n+' of 6';
+  window.scrollTo(0,0);
+}
+
+// Check for saved key on load
+window.addEventListener('load',function(){
+  var saved=localStorage.getItem('stt_api_key');
+  if(saved&&saved.length>10){
+    hide('vSetup');show('vWelcome');
+  }
+});
+
+// Save key
+document.getElementById('btnSaveKey').addEventListener('click',function(){
+  var key=document.getElementById('apiKeyInput').value.trim();
+  if(!key||key.length<20){alert('Please enter a valid API key.');return;}
+  localStorage.setItem('stt_api_key',key);
+  hide('vSetup');show('vWelcome');
+});
+
+// Wire cards
+document.querySelectorAll('#sitGrid .sc').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('#sitGrid .sc').forEach(desel);
+    sel(c); S.sit=c.dataset.val;
+    document.querySelectorAll('#s1 .oi').forEach(function(i){i.classList.remove('on')});
+    if(c.dataset.other)document.getElementById(c.dataset.other).classList.add('on');
+  });
+});
+
+document.querySelectorAll('#relRow .sp').forEach(function(p){
+  p.addEventListener('click',function(){
+    document.querySelectorAll('#relRow .sp').forEach(desel);
+    sel(p); S.rel=p.dataset.val;
+    document.querySelectorAll('#s3 .oi').forEach(function(i){i.classList.remove('on')});
+    if(p.dataset.other)document.getElementById(p.dataset.other).classList.add('on');
+  });
+});
+
+document.querySelectorAll('#chButtons .sp-block').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#chButtons .sp-block').forEach(desel);
+    sel(b); S.ch=b.dataset.val;
+    var flag=document.getElementById('chFlag');
+    (RISKY_SITS.indexOf(S.sit)>-1&&RISKY_CH.indexOf(b.dataset.val)>-1)?flag.classList.add('on'):flag.classList.remove('on');
+  });
+});
+
+document.querySelectorAll('#patButtons .sp-block').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#patButtons .sp-block').forEach(desel);
+    sel(b); S.pat=b.dataset.val;
+  });
+});
+
+document.getElementById('btnStart').addEventListener('click',function(){hide('vWelcome');show('vForm');goStep(1);});
+document.getElementById('btnTo1b').addEventListener('click',function(){goStep(1);});
+document.getElementById('btnTo2b').addEventListener('click',function(){goStep(2);});
+document.getElementById('btnTo3b').addEventListener('click',function(){goStep(3);});
+document.getElementById('btnTo4b').addEventListener('click',function(){goStep(4);});
+document.getElementById('btnTo5b').addEventListener('click',function(){goStep(5);});
+
+document.getElementById('btnTo2').addEventListener('click',function(){if(!S.sit){alert('Please select a conversation type.');return;}goStep(2);});
+document.getElementById('btnTo3').addEventListener('click',function(){S.desc=document.getElementById('desc').value.trim();if(!S.desc){alert('Please describe your situation.');return;}goStep(3);});
+document.getElementById('btnTo4').addEventListener('click',function(){if(!S.rel){alert('Please select your relationship to this person.');return;}goStep(4);});
+document.getElementById('btnTo5').addEventListener('click',function(){if(!S.ch){alert('Please select how you\'re planning to have this conversation.');return;}goStep(5);});
+document.getElementById('btnTo6').addEventListener('click',function(){if(!S.pat){alert('Please select how you typically respond.');return;}goStep(6);});
+
+document.getElementById('btnRestart').addEventListener('click',function(){
+  Object.keys(S).forEach(function(k){S[k]='';});
+  document.querySelectorAll('.sc,.sp,.sp-block').forEach(desel);
+  document.querySelectorAll('textarea').forEach(function(e){e.value='';});
+  document.querySelectorAll('input.oi').forEach(function(e){e.value='';e.classList.remove('on');});
+  document.getElementById('chFlag').classList.remove('on');
+  document.getElementById('outErr').style.display='none';
+  hide('vOutput');show('vWelcome');
+  window.scrollTo(0,0);
+});
+
+document.getElementById('btnSubmit').addEventListener('click',function(){
+  S.identity=document.getElementById('identity').value.trim();
+  var sitOther=document.getElementById('sitOther').value.trim();
+  var relOther=document.getElementById('relOther').value.trim();
+  var sitLabel=(S.sit==='Something else'&&sitOther)?sitOther:S.sit;
+  var relLabel=(S.rel==='Other'&&relOther)?relOther:S.rel;
+  var chNote=RISKY_SITS.indexOf(S.sit)>-1&&RISKY_CH.indexOf(S.ch)>-1?' (note: this channel may need extra care)':'';
+  var apiKey=localStorage.getItem('stt_api_key');
+  if(!apiKey){alert('API key missing. Please refresh and enter your key.');return;}
+
+  hide('vForm');show('vLoading');window.scrollTo(0,0);
+
+  var msgs=['Reading your situation...','Finding the right language...','Preparing your talking points...','Almost there...'];
+  var mi=0;var lt=document.getElementById('loadTxt');
+  var mt=setInterval(function(){mi=(mi+1)%msgs.length;lt.textContent=msgs[mi];},2200);
+
+  var userMsg='Situation type: '+sitLabel+'\nRelationship: '+relLabel+'\nChannel: '+S.ch+chNote+'\nWhat\'s happening: '+S.desc+'\nUnder tension I: '+S.pat+(S.identity?'\nAdditional context: '+S.identity:'');
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1200,
+      system:SYSTEM,
+      messages:[{role:'user',content:userMsg}]
+    })
+  })
+  .then(function(res){return res.json();})
+  .then(function(data){
+    clearInterval(mt);
+    if(data.error)throw new Error('API: '+JSON.stringify(data.error));
+    var raw=data.content.filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    var match=raw.match(/\{[\s\S]*\}/);
+    if(!match)throw new Error('No JSON found.');
+    var r=JSON.parse(match[0]);
+
+    hide('vLoading');show('vOutput');window.scrollTo(0,0);
+    document.getElementById('outTag').textContent=sitLabel;
+    document.getElementById('outGrounding').innerHTML='<p>'+r.grounding_note+'</p>';
+
+    var lo=document.getElementById('outLang');lo.innerHTML='';
+    r.language_options.forEach(function(o){
+      lo.innerHTML+='<div class="lcard"><div class="lreg">'+o.register+'</div><div class="ltx">'+o.text+'</div></div>';
+    });
+
+    var tp=document.getElementById('outTP');tp.innerHTML='';
+    r.talking_points.forEach(function(t){
+      tp.innerHTML+='<div class="tpi"><div class="tpd"></div><div class="tpt">'+t+'</div></div>';
+    });
+
+    document.getElementById('outMIY').textContent=r.make_it_yours;
+    document.getElementById('outWF').textContent=r.watch_for;
+
+    var copyText='SAY THE THING\n'+sitLabel+'\n\n';
+    copyText+='GROUNDING NOTE\n'+r.grounding_note+'\n\n';
+    copyText+='YOUR LANGUAGE OPTIONS\n\n';
+    r.language_options.forEach(function(o){copyText+=o.register.toUpperCase()+'\n'+o.text+'\n\n';});
+    copyText+='TALKING POINTS\n';
+    r.talking_points.forEach(function(t){copyText+='- '+t+'\n';});
+    copyText+='\nMAKE IT YOURS\n'+r.make_it_yours+'\n\n';
+    copyText+='WATCH FOR THIS\n'+r.watch_for;
+    document.getElementById('btnCopyAll').dataset.copy=copyText;
+  })
+  .catch(function(err){
+    clearInterval(mt);
+    hide('vLoading');show('vOutput');
+    var eb=document.getElementById('outErr');
+    eb.style.display='block';
+    eb.textContent='Something went wrong: '+err.message;
+  });
+});
+
+document.getElementById('btnCopyAll').addEventListener('click',function(){
+  var btn=this;var text=btn.dataset.copy||'';if(!text)return;
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='Copy all';btn.classList.remove('copied');},2000);
+  }).catch(function(){
+    var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(function(){btn.textContent='Copy all';btn.classList.remove('copied');},2000);
+  });
+});
+</script>
+</body>
+</html>
