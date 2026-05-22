@@ -1,0 +1,8 @@
+{
+  "name": "saythething",
+  "version": "1.0.0",
+  "description": "Say The Thing Workplace Coach App",
+  "main": "api/chat.js",
+  "dependencies": {},
+  "devDependencies": {}
+}
