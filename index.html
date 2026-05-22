@@ -420,7 +420,7 @@
                     const btn = document.createElement('button');
                     btn.className = 'option-button';
                     if (answers[currentStep] === choice) {
-                        btn.className += ' selected';
+                        btn.classList.add('selected');
                     }
                     btn.innerText = choice;
                     btn.onclick = () => selectOption(choice);
@@ -448,10 +448,9 @@
                 }
             });
             
-            // Auto-advance configuration on visual choice selection
             setTimeout(() => {
                 goNext();
-            }, 250);
+            }, 300);
         }
 
         function goBack() {
@@ -470,7 +469,7 @@
             }
             
             if (!answers[currentStep]) {
-                alert('Please make a selection or provide text input to proceed.');
+                alert('Please select an option to continue.');
                 return;
             }
 
@@ -486,7 +485,7 @@
             document.getElementById('wizard-screen').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
 
-            const formattedPrompt = questions.map((q, i) => '[' + q.label + ']\n' + (answers[i] || 'Not specified')).join('\n\n');
+            const formattedPrompt = questions.map((q, i) => '[' + q.label + ']\n' + answers[i]).join('\n\n');
 
             try {
                 const response = await fetch('/api/chat', {
